@@ -168,16 +168,10 @@ _scaler  = joblib.load(_MODEL_DIR / "scaler.pkl")
 _features = joblib.load(_MODEL_DIR / "feature_list.pkl")
 
 def predict(data: dict) -> dict:
-    import numpy as np
+    # Regression: use the hand-coded formula derived from LightGBM
+    score = calculate_underwriting_score(data)
     
-    # Build input array in the exact feature order
-    X = np.array([[data[f] for f in _features]])
-    
-    # Regression: predict score
-    score = float(_lgbm.predict(X)[0])
-    score = max(0.0, min(100.0, round(score, 2)))
-    
-    # Classification: risk category (using your assign_risk_category logic)
+    # Classification: risk category
     risk = assign_risk_category(score)
     rec  = generate_recommendation(risk)
     conf = confidence_level(score, data)

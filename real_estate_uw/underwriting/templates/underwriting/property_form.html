@@ -1,23 +1,28 @@
 {% extends 'underwriting/base.html' %}
 {% block title %}{{ title }}{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
-
 {% block content %}
+
 <form method="post" novalidate>
   {% csrf_token %}
 
   <div class="row g-4">
     <!-- ── LEFT: Form Sections ───────────────────────────────────────────── -->
     <div class="col-lg-8">
-
       <!-- Section 1: Project Identity -->
       <div class="form-section">
         <h6><i class="bi bi-building me-2"></i>Project Identity</h6>
         <div class="row g-3">
           <div class="col-sm-7">
-            <label class="form-label">{{ form.project_name.label }} <span class="text-danger">*</span></label>
-            {{ form.project_name }}
-            {% if form.project_name.errors %}<div class="invalid-feedback d-block">{{ form.project_name.errors.0 }}</div>{% endif %}
+            <label class="form-label"
+              >{{ form.project_name.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.project_name }} {% if form.project_name.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.project_name.errors.0 }}
+            </div>
+            {% endif %}
           </div>
           <div class="col-sm-5">
             <label class="form-label">{{ form.location.label }}</label>
@@ -28,19 +33,62 @@
 
       <!-- Section 2: Domain Scores -->
       <div class="form-section">
-        <h6><i class="bi bi-bar-chart-line me-2"></i>Domain Scores <small class="text-muted fw-normal">(0 – 100)</small></h6>
+        <h6>
+          <i class="bi bi-bar-chart-line me-2"></i>Domain Scores
+          <small class="text-muted fw-normal">(0 – 100)</small>
+        </h6>
         <div class="row g-3">
-          {% for f in form.market_score form.property_score form.builder_score form.financial_score %}
           <div class="col-sm-6">
-            <label class="form-label">{{ f.label }} <span class="text-danger">*</span></label>
-            {{ f }}
-            {% if f.errors %}<div class="invalid-feedback d-block">{{ f.errors.0 }}</div>{% endif %}
+            <label class="form-label"
+              >{{ form.market_score.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.market_score }} {% if form.market_score.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.market_score.errors.0 }}
+            </div>
+            {% endif %}
           </div>
-          {% endfor %}
+          <div class="col-sm-6">
+            <label class="form-label"
+              >{{ form.property_score.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.property_score }} {% if form.property_score.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.property_score.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label"
+              >{{ form.builder_score.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.builder_score }} {% if form.builder_score.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.builder_score.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label"
+              >{{ form.financial_score.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.financial_score }} {% if form.financial_score.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.financial_score.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
         </div>
-        <div class="alert alert-light border mt-3 mb-0 py-2 px-3 small text-muted">
+        <div
+          class="alert alert-light border mt-3 mb-0 py-2 px-3 small text-muted"
+        >
           <i class="bi bi-info-circle me-1"></i>
-          These four composite scores are computed by the domain team and fed directly into the model as the highest-weighted features.
+          These four composite scores are computed by the domain team and fed
+          directly into the model as the highest-weighted features.
         </div>
       </div>
 
@@ -49,22 +97,35 @@
         <h6><i class="bi bi-person-badge me-2"></i>Builder Profile</h6>
         <div class="row g-3">
           <div class="col-sm-6">
-            <label class="form-label">{{ form.net_worth_crores.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.net_worth_crores.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.net_worth_crores }}
           </div>
           <div class="col-sm-3">
-            <label class="form-label">{{ form.projects_completed.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.projects_completed.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.projects_completed }}
           </div>
           <div class="col-sm-3">
-            <label class="form-label">{{ form.builder_years_in_business.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.builder_years_in_business.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.builder_years_in_business }}
           </div>
           <div class="col-sm-6">
             <div class="form-check mt-2 pt-1">
               {{ form.is_publicly_listed }}
-              <label class="form-check-label">{{ form.is_publicly_listed.label }}</label>
-              <div class="form-text">Publicly listed builders have higher transparency requirements.</div>
+              <label class="form-check-label"
+                >{{ form.is_publicly_listed.label }}</label
+              >
+              <div class="form-text">
+                Publicly listed builders have higher transparency requirements.
+              </div>
             </div>
           </div>
         </div>
@@ -75,27 +136,45 @@
         <h6><i class="bi bi-shield-exclamation me-2"></i>Risk Indicators</h6>
         <div class="row g-3">
           <div class="col-sm-4">
-            <label class="form-label">{{ form.litigation_count.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.litigation_count.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.litigation_count }}
             <div class="form-text">Active court cases / disputes.</div>
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.rera_violations.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.rera_violations.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.rera_violations }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.avg_delay_months.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.avg_delay_months.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.avg_delay_months }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.debt_to_equity_ratio.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.debt_to_equity_ratio.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.debt_to_equity_ratio }}
             <div class="form-text">e.g. 1.5 means 1.5x debt to equity.</div>
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.loan_to_value_pct.label }} <span class="text-danger">*</span></label>
-            {{ form.loan_to_value_pct }}
-            {% if form.loan_to_value_pct.errors %}<div class="invalid-feedback d-block">{{ form.loan_to_value_pct.errors.0 }}</div>{% endif %}
+            <label class="form-label"
+              >{{ form.loan_to_value_pct.label }}
+              <span class="text-danger">*</span></label
+            >
+            {{ form.loan_to_value_pct }} {% if form.loan_to_value_pct.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.loan_to_value_pct.errors.0 }}
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -105,23 +184,38 @@
         <h6><i class="bi bi-graph-up me-2"></i>Market Dynamics</h6>
         <div class="row g-3">
           <div class="col-sm-4">
-            <label class="form-label">{{ form.price_cagr_3yr.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.price_cagr_3yr.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.price_cagr_3yr }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.expected_rental_yield.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.expected_rental_yield.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.expected_rental_yield }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.monthly_absorption_pct.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.monthly_absorption_pct.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.monthly_absorption_pct }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.inventory_months.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.inventory_months.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.inventory_months }}
           </div>
           <div class="col-sm-4">
-            <label class="form-label">{{ form.new_supply_units.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.new_supply_units.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.new_supply_units }}
           </div>
         </div>
@@ -132,41 +226,74 @@
         <h6><i class="bi bi-geo-alt me-2"></i>Location Factors</h6>
         <div class="row g-3">
           <div class="col-sm-6">
-            <label class="form-label">{{ form.distance_to_cbd_km.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.distance_to_cbd_km.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.distance_to_cbd_km }}
             <div class="form-text">Distance to Central Business District.</div>
           </div>
           <div class="col-sm-6">
-            <label class="form-label">{{ form.distance_to_metro_km.label }} <span class="text-danger">*</span></label>
+            <label class="form-label"
+              >{{ form.distance_to_metro_km.label }}
+              <span class="text-danger">*</span></label
+            >
             {{ form.distance_to_metro_km }}
-            <div class="form-text">Distance to nearest metro / rapid transit.</div>
+            <div class="form-text">
+              Distance to nearest metro / rapid transit.
+            </div>
           </div>
         </div>
       </div>
-
-    </div><!-- /col-lg-8 -->
+    </div>
+    <!-- /col-lg-8 -->
 
     <!-- ── RIGHT: Info Panel ─────────────────────────────────────────────── -->
     <div class="col-lg-4">
       <!-- Sticky sidebar card -->
-      <div style="position: sticky; top: 80px;">
-
+      <div style="position: sticky; top: 80px">
         <!-- Model Info -->
         <div class="stat-card mb-3">
-          <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+          <h6
+            class="fw-bold mb-3"
+            style="
+              color: #1a3c5e;
+              font-size: 0.82rem;
+              text-transform: uppercase;
+            "
+          >
             <i class="bi bi-cpu me-1"></i> Model Info
           </h6>
           <table class="table table-sm table-borderless feature-table mb-0">
-            <tr><td>Regressor</td><td>LightGBM</td></tr>
-            <tr><td>Classifier</td><td>SVC (RBF)</td></tr>
-            <tr><td>Features</td><td>21 selected</td></tr>
-            <tr><td>Output</td><td>Score 0–100</td></tr>
+            <tr>
+              <td>Regressor</td>
+              <td>LightGBM</td>
+            </tr>
+            <tr>
+              <td>Classifier</td>
+              <td>SVC (RBF)</td>
+            </tr>
+            <tr>
+              <td>Features</td>
+              <td>21 selected</td>
+            </tr>
+            <tr>
+              <td>Output</td>
+              <td>Score 0–100</td>
+            </tr>
           </table>
         </div>
 
         <!-- Score Ranges -->
         <div class="stat-card mb-3">
-          <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+          <h6
+            class="fw-bold mb-3"
+            style="
+              color: #1a3c5e;
+              font-size: 0.82rem;
+              text-transform: uppercase;
+            "
+          >
             <i class="bi bi-diagram-3 me-1"></i> Score → Risk Map
           </h6>
           <div class="d-flex flex-column gap-2">
@@ -195,11 +322,27 @@
 
         <!-- Submit -->
         <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-lg fw-bold" style="background:#1a3c5e;color:#fff;border-color:#1a3c5e;">
+          {% if not assessment %}
+          <button
+            type="button"
+            id="inject-test-data"
+            class="btn btn-outline-primary"
+          >
+            <i class="bi bi-bezier2 me-1"></i> Inject Test Data
+          </button>
+          {% endif %}
+          <button
+            type="submit"
+            class="btn btn-lg fw-bold"
+            style="background: #1a3c5e; color: #fff; border-color: #1a3c5e"
+          >
             <i class="bi bi-lightning-charge-fill me-2"></i>{{ btn }}
           </button>
           {% if assessment %}
-          <a href="{% url 'property_detail' assessment.pk %}" class="btn btn-outline-secondary">
+          <a
+            href="{% url 'property_detail' assessment.pk %}"
+            class="btn btn-outline-secondary"
+          >
             <i class="bi bi-arrow-left me-1"></i> Back to Details
           </a>
           {% else %}
@@ -208,10 +351,70 @@
           </a>
           {% endif %}
         </div>
-
       </div>
-    </div><!-- /col-lg-4 -->
-
-  </div><!-- /row -->
+    </div>
+    <!-- /col-lg-4 -->
+  </div>
+  <!-- /row -->
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    const injectBtn = document.getElementById("inject-test-data");
+    if (!injectBtn) {
+      return;
+    }
+
+    function setValue(name, value) {
+      const field = document.querySelector(`[name="${name}"]`);
+      if (!field) {
+        return;
+      }
+      field.value = value;
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function setChecked(name, checked) {
+      const field = document.querySelector(`[name="${name}"]`);
+      if (!field) {
+        return;
+      }
+      field.checked = checked;
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    injectBtn.addEventListener("click", function () {
+      setValue("project_name", "Demo Heights Phase 2");
+      setValue("location", "Whitefield, Bengaluru");
+
+      setValue("market_score", 78);
+      setValue("property_score", 74);
+      setValue("builder_score", 81);
+      setValue("financial_score", 69);
+
+      setValue("net_worth_crores", 420);
+      setValue("projects_completed", 26);
+      setValue("builder_years_in_business", 17);
+      setChecked("is_publicly_listed", true);
+
+      setValue("litigation_count", 1);
+      setValue("rera_violations", 0);
+      setValue("avg_delay_months", 4);
+      setValue("debt_to_equity_ratio", 1.2);
+      setValue("loan_to_value_pct", 58);
+
+      setValue("price_cagr_3yr", 9.1);
+      setValue("expected_rental_yield", 4.6);
+      setValue("monthly_absorption_pct", 3.1);
+      setValue("inventory_months", 11);
+      setValue("new_supply_units", 1450);
+
+      setValue("distance_to_cbd_km", 9.5);
+      setValue("distance_to_metro_km", 1.4);
+    });
+  })();
+</script>
 {% endblock %}

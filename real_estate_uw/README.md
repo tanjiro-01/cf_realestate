@@ -1,4 +1,5 @@
 # Real Estate Underwriting System
+
 ### Built for CodeFrontier Software · Thejaswi Bhat H
 
 A **Django + SQLite** web application that wraps the ML model from
@@ -10,36 +11,43 @@ full CRUD interface with an **AI-powered explanation** panel via Claude.
 ## Quick Start
 
 ### 1. Clone / unzip the project
+
 ```bash
 cd real_estate_uw
 ```
 
 ### 2. Create a virtual environment
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
 ```
 
 ### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Configure environment
+
 ```bash
-cp .env.example .env
+cp .env.example .env      # Windows PowerShell: Copy-Item .env.example .env
 # Edit .env and set:
-#   ANTHROPIC_API_KEY=sk-ant-...   ← for AI explanations
+#   GROQ_API_KEY=gsk_...           ← for AI explanations (recommended)
+#   ANTHROPIC_API_KEY=sk-ant-...   ← optional fallback provider
 #   DJANGO_SECRET_KEY=<any random string>
 ```
 
 ### 5. Run migrations & create superuser
+
 ```bash
 python manage.py migrate
 python manage.py createsuperuser
 ```
 
 ### 6. Start the server
+
 ```bash
 python manage.py runserver
 ```
@@ -50,14 +58,14 @@ Open **http://127.0.0.1:8000** in your browser.
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| **Dashboard** | Stats cards, risk donut chart, avg score, recent assessments |
-| **CRUD** | Create / Read / Update / Delete property assessments |
-| **ML Prediction** | Underwriting score (0–100), risk category, recommendation, confidence |
-| **AI Explain** | Claude API generates plain-English investment analysis |
-| **Search & Filter** | Filter by risk category, recommendation, or text search |
-| **Admin Panel** | Django admin at `/admin/` |
+| Feature             | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| **Dashboard**       | Stats cards, risk donut chart, avg score, recent assessments          |
+| **CRUD**            | Create / Read / Update / Delete property assessments                  |
+| **ML Prediction**   | Underwriting score (0–100), risk category, recommendation, confidence |
+| **AI Explain**      | Claude API generates plain-English investment analysis                |
+| **Search & Filter** | Filter by risk category, recommendation, or text search               |
+| **Admin Panel**     | Django admin at `/admin/`                                             |
 
 ---
 
@@ -66,14 +74,15 @@ Open **http://127.0.0.1:8000** in your browser.
 The scoring engine (`underwriting/ml_engine.py`) replicates the feature
 weights identified in the notebook's LightGBM Regressor training:
 
-| Feature Group | Weight |
-|---|---|
-| Domain Scores (market/property/builder/financial) | 65% |
-| Builder Strength (net worth, projects, experience, listing) | ~12% |
-| Market / Financial (CAGR, yield, absorption) | ~10% |
-| Risk Penalties (litigations, RERA, D/E, delays) | deducted |
+| Feature Group                                               | Weight   |
+| ----------------------------------------------------------- | -------- |
+| Domain Scores (market/property/builder/financial)           | 65%      |
+| Builder Strength (net worth, projects, experience, listing) | ~12%     |
+| Market / Financial (CAGR, yield, absorption)                | ~10%     |
+| Risk Penalties (litigations, RERA, D/E, delays)             | deducted |
 
 **Risk thresholds (from notebook):**
+
 - ≥ 80 → Low Risk → **INVEST**
 - 65–79 → Moderate Risk → **INVEST**
 - 50–64 → Medium Risk → **HOLD**
@@ -84,9 +93,10 @@ weights identified in the notebook's LightGBM Regressor training:
 
 ## AI Feature
 
-When `ANTHROPIC_API_KEY` is set in `.env`, clicking **"Explain This Assessment"**
-on the detail page calls `claude-sonnet-4-20250514` and returns a 200–280 word
+When `GROQ_API_KEY` or `ANTHROPIC_API_KEY` is set in `.env`, clicking **"Explain This Assessment"**
+on the detail page calls an LLM and returns a 200–280 word
 analysis covering:
+
 - Executive summary
 - Score drivers (positive & negative)
 - Key investment risks

@@ -2,3 +2,15 @@ data/
 *.xlsx
 *.csv
 *.xls
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Local environment secrets
+.env
+real_estate_uw/.env

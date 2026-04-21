@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from .models import PropertyAssessment
 from .forms import PropertyAssessmentForm
 from .ml_engine import predict
-from .ai_explainer import get_ai_explanation
+from .ai_explainer import get_ai_explanation, get_ai_request_payload
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -164,5 +164,11 @@ def property_delete(request, pk):
 def ai_explain(request, pk):
     """Returns AI explanation as JSON — called via fetch() from the detail page."""
     assessment = get_object_or_404(PropertyAssessment, pk=pk)
+    request_payload = get_ai_request_payload(assessment)
     explanation = get_ai_explanation(assessment)
-    return JsonResponse({'explanation': explanation})
+    return JsonResponse({
+        'explanation': explanation,
+        'request_body': request_payload,
+        'provider': request_payload.get('provider'),
+        'model': request_payload.get('model'),
+    })

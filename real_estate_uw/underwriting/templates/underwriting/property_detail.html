@@ -1,7 +1,6 @@
 {% extends 'underwriting/base.html' %}
 {% block title %}{{ assessment.project_name }}{% endblock %}
 {% block page_title %}{{ assessment.project_name }}{% endblock %}
-
 {% block content %}
 
 <!-- ── Action Bar ─────────────────────────────────────────────────────────── -->
@@ -9,213 +8,377 @@
   <a href="{% url 'property_list' %}" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-left me-1"></i> All Assessments
   </a>
-  <a href="{% url 'property_update' assessment.pk %}" class="btn btn-outline-primary btn-sm">
+  <a
+    href="{% url 'property_update' assessment.pk %}"
+    class="btn btn-outline-primary btn-sm"
+  >
     <i class="bi bi-pencil me-1"></i> Edit
   </a>
-  <a href="{% url 'property_delete' assessment.pk %}" class="btn btn-outline-danger btn-sm ms-auto">
+  <a
+    href="{% url 'property_delete' assessment.pk %}"
+    class="btn btn-outline-danger btn-sm ms-auto"
+  >
     <i class="bi bi-trash me-1"></i> Delete
   </a>
 </div>
 
 <div class="row g-4">
-
   <!-- ── LEFT COLUMN ──────────────────────────────────────────────────────── -->
   <div class="col-lg-4">
-
     <!-- Score Card -->
     <div class="stat-card text-center mb-4">
-      <div class="mb-1 small text-muted fw-semibold text-uppercase">Underwriting Score</div>
+      <div class="mb-1 small text-muted fw-semibold text-uppercase">
+        Underwriting Score
+      </div>
 
       <!-- Half-circle gauge -->
       <div class="gauge-wrap mb-2">
         <svg viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
           <!-- Background arc -->
-          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round"/>
+          <path
+            d="M 20 110 A 90 90 0 0 1 200 110"
+            fill="none"
+            stroke="#e2e8f0"
+            stroke-width="18"
+            stroke-linecap="round"
+          />
           <!-- Filled arc (dasharray trick on a semicircle perimeter ≈ 283) -->
-          <path id="gaugeFill" d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
-                stroke="{{ assessment.score_color }}" stroke-width="18" stroke-linecap="round"
-                stroke-dasharray="0 283"/>
+          <path
+            id="gaugeFill"
+            d="M 20 110 A 90 90 0 0 1 200 110"
+            fill="none"
+            stroke="{{ assessment.score_color }}"
+            stroke-width="18"
+            stroke-linecap="round"
+            stroke-dasharray="0 283"
+          />
           <!-- Score text -->
-          <text x="110" y="105" text-anchor="middle" font-size="38" font-weight="800"
-                fill="{{ assessment.score_color }}">{{ assessment.predicted_score|floatformat:1 }}</text>
-          <text x="110" y="118" text-anchor="middle" font-size="12" fill="#94a3b8">/ 100</text>
+          <text
+            x="110"
+            y="105"
+            text-anchor="middle"
+            font-size="38"
+            font-weight="800"
+            fill="{{ assessment.score_color }}"
+          >
+            {{ assessment.predicted_score|floatformat:1 }}
+          </text>
+          <text
+            x="110"
+            y="118"
+            text-anchor="middle"
+            font-size="12"
+            fill="#94a3b8"
+          >
+            / 100
+          </text>
         </svg>
       </div>
 
       <div class="mb-2">
-        <span class="badge text-bg-{{ assessment.risk_badge_class }} fs-6 px-3 py-2">
+        <span
+          class="badge text-bg-{{ assessment.risk_badge_class }} fs-6 px-3 py-2"
+        >
           {{ assessment.risk_category }}
         </span>
       </div>
       <div>
-        <span class="badge text-bg-{{ assessment.recommendation_badge_class }} fs-5 px-4 py-2">
-          {% if assessment.recommendation == 'INVEST' %}<i class="bi bi-check-circle-fill me-1"></i>
-          {% elif assessment.recommendation == 'HOLD' %}<i class="bi bi-pause-circle-fill me-1"></i>
-          {% else %}<i class="bi bi-x-circle-fill me-1"></i>{% endif %}
-          {{ assessment.recommendation }}
+        <span
+          class="badge text-bg-{{ assessment.recommendation_badge_class }} fs-5 px-4 py-2"
+        >
+          {% if assessment.recommendation == 'INVEST' %}<i
+            class="bi bi-check-circle-fill me-1"
+          ></i>
+          {% elif assessment.recommendation == 'HOLD' %}<i
+            class="bi bi-pause-circle-fill me-1"
+          ></i>
+          {% else %}<i class="bi bi-x-circle-fill me-1"></i>{% endif %} {{
+          assessment.recommendation }}
         </span>
       </div>
       <div class="mt-3 text-muted small">
         <i class="bi bi-shield-check me-1"></i>{{ assessment.confidence_level }}
       </div>
-      <hr>
+      <hr />
       <div class="text-muted small">
-        <i class="bi bi-geo-alt me-1"></i>{{ assessment.location|default:"Location not specified" }}<br>
-        <i class="bi bi-calendar3 me-1"></i>{{ assessment.created_at|date:"d M Y, H:i" }}
+        <i class="bi bi-geo-alt me-1"></i>{{
+        assessment.location|default:"Location not specified" }}<br />
+        <i class="bi bi-calendar3 me-1"></i>{{ assessment.created_at|date:"d M
+        Y, H:i" }}
       </div>
     </div>
 
     <!-- Score Breakdown Mini -->
     <div class="stat-card mb-4">
-      <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+      <h6
+        class="fw-bold mb-3"
+        style="color: #1a3c5e; font-size: 0.82rem; text-transform: uppercase"
+      >
         <i class="bi bi-bar-chart me-1"></i> Domain Scores
       </h6>
-      {% for label, val in features.market_score,features.property_score,features.builder_score,features.financial_score %}
-      {% endfor %}
       {% with s=features %}
       <div class="mb-2">
-        <div class="d-flex justify-content-between small mb-1"><span>Market</span><strong>{{ s.market_score|floatformat:1 }}</strong></div>
-        <div class="progress" style="height:6px;"><div class="progress-bar" style="width:{{ s.market_score }}%;background:#1a3c5e;"></div></div>
+        <div class="d-flex justify-content-between small mb-1">
+          <span>Market</span><strong>{{ s.market_score|floatformat:1 }}</strong>
+        </div>
+        <div class="progress" style="height: 6px">
+          <div
+            class="progress-bar"
+            style="width:{{ s.market_score }}%;background:#1a3c5e;"
+          ></div>
+        </div>
       </div>
       <div class="mb-2">
-        <div class="d-flex justify-content-between small mb-1"><span>Property</span><strong>{{ s.property_score|floatformat:1 }}</strong></div>
-        <div class="progress" style="height:6px;"><div class="progress-bar bg-info" style="width:{{ s.property_score }}%;"></div></div>
+        <div class="d-flex justify-content-between small mb-1">
+          <span>Property</span
+          ><strong>{{ s.property_score|floatformat:1 }}</strong>
+        </div>
+        <div class="progress" style="height: 6px">
+          <div
+            class="progress-bar bg-info"
+            style="width:{{ s.property_score }}%;"
+          ></div>
+        </div>
       </div>
       <div class="mb-2">
-        <div class="d-flex justify-content-between small mb-1"><span>Builder</span><strong>{{ s.builder_score|floatformat:1 }}</strong></div>
-        <div class="progress" style="height:6px;"><div class="progress-bar bg-warning" style="width:{{ s.builder_score }}%;"></div></div>
+        <div class="d-flex justify-content-between small mb-1">
+          <span>Builder</span
+          ><strong>{{ s.builder_score|floatformat:1 }}</strong>
+        </div>
+        <div class="progress" style="height: 6px">
+          <div
+            class="progress-bar bg-warning"
+            style="width:{{ s.builder_score }}%;"
+          ></div>
+        </div>
       </div>
       <div>
-        <div class="d-flex justify-content-between small mb-1"><span>Financial</span><strong>{{ s.financial_score|floatformat:1 }}</strong></div>
-        <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:{{ s.financial_score }}%;"></div></div>
+        <div class="d-flex justify-content-between small mb-1">
+          <span>Financial</span
+          ><strong>{{ s.financial_score|floatformat:1 }}</strong>
+        </div>
+        <div class="progress" style="height: 6px">
+          <div
+            class="progress-bar bg-success"
+            style="width:{{ s.financial_score }}%;"
+          ></div>
+        </div>
       </div>
       {% endwith %}
     </div>
-
-  </div><!-- /col-lg-4 -->
+  </div>
+  <!-- /col-lg-4 -->
 
   <!-- ── RIGHT COLUMN ─────────────────────────────────────────────────────── -->
   <div class="col-lg-8">
-
     <!-- AI Explain Panel -->
     <div id="ai-panel" class="mb-4">
       <div class="ai-header">
         <div class="ai-icon"><i class="bi bi-stars"></i></div>
         <div>
-          <div class="fw-bold" style="color:#1a3c5e;">AI Analysis</div>
-          <div class="text-muted small">Powered by Claude · Anthropic</div>
+          <div class="fw-bold" style="color: #1a3c5e">AI Analysis</div>
+          <div class="text-muted small">Request preview and AI explanation</div>
         </div>
-        <button id="aiBtn" class="btn btn-sm btn-primary ms-auto" style="background:#1a3c5e;border-color:#1a3c5e;"
-                onclick="loadAI()">
+        <button
+          id="aiBtn"
+          class="btn btn-sm btn-primary ms-auto"
+          style="background: #1a3c5e; border-color: #1a3c5e"
+          onclick="loadAI()"
+        >
           <i class="bi bi-magic me-1"></i> Explain This Assessment
         </button>
       </div>
+      <div class="mb-3">
+        <div class="small fw-semibold text-uppercase text-muted mb-2">
+          Request Body Sent to Agent
+        </div>
+        <pre
+          id="ai-request"
+          class="bg-white border rounded p-3 small mb-0"
+          style="white-space: pre-wrap; max-height: 260px; overflow: auto"
+        >
+Click "Explain This Assessment" to preview the exact request payload.</pre
+        >
+      </div>
       <div id="ai-content" class="text-muted small fst-italic">
-        Click <strong>"Explain This Assessment"</strong> to get an AI-powered analysis of the underwriting result, key risk drivers, and investment rationale.
+        Click <strong>"Explain This Assessment"</strong> to get an AI-powered
+        analysis of the underwriting result, key risk drivers, and investment
+        rationale.
       </div>
     </div>
 
     <!-- Feature Table -->
     <div class="stat-card">
-      <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+      <h6
+        class="fw-bold mb-3"
+        style="color: #1a3c5e; font-size: 0.82rem; text-transform: uppercase"
+      >
         <i class="bi bi-table me-1"></i> All Input Features (21)
       </h6>
       <div class="row">
         <div class="col-md-6">
-          <h6 class="small fw-bold text-muted text-uppercase mb-2">Risk Indicators</h6>
+          <h6 class="small fw-bold text-muted text-uppercase mb-2">
+            Risk Indicators
+          </h6>
           <table class="table table-sm feature-table mb-3">
-            <tr><td>Litigation Count</td><td>{{ assessment.litigation_count }}</td></tr>
-            <tr><td>RERA Violations</td><td>{{ assessment.rera_violations }}</td></tr>
-            <tr><td>Avg Delay (mo)</td><td>{{ assessment.avg_delay_months }}</td></tr>
-            <tr><td>Debt / Equity</td><td>{{ assessment.debt_to_equity_ratio }}</td></tr>
-            <tr><td>Loan-to-Value %</td><td>{{ assessment.loan_to_value_pct }}%</td></tr>
+            <tr>
+              <td>Litigation Count</td>
+              <td>{{ assessment.litigation_count }}</td>
+            </tr>
+            <tr>
+              <td>RERA Violations</td>
+              <td>{{ assessment.rera_violations }}</td>
+            </tr>
+            <tr>
+              <td>Avg Delay (mo)</td>
+              <td>{{ assessment.avg_delay_months }}</td>
+            </tr>
+            <tr>
+              <td>Debt / Equity</td>
+              <td>{{ assessment.debt_to_equity_ratio }}</td>
+            </tr>
+            <tr>
+              <td>Loan-to-Value %</td>
+              <td>{{ assessment.loan_to_value_pct }}%</td>
+            </tr>
           </table>
 
-          <h6 class="small fw-bold text-muted text-uppercase mb-2">Builder Profile</h6>
+          <h6 class="small fw-bold text-muted text-uppercase mb-2">
+            Builder Profile
+          </h6>
           <table class="table table-sm feature-table mb-3">
-            <tr><td>Net Worth</td><td>₹{{ assessment.net_worth_crores }} Cr</td></tr>
-            <tr><td>Projects Completed</td><td>{{ assessment.projects_completed }}</td></tr>
-            <tr><td>Years in Business</td><td>{{ assessment.builder_years_in_business }} yrs</td></tr>
-            <tr><td>Publicly Listed</td><td>{% if assessment.is_publicly_listed %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-secondary">No</span>{% endif %}</td></tr>
+            <tr>
+              <td>Net Worth</td>
+              <td>₹{{ assessment.net_worth_crores }} Cr</td>
+            </tr>
+            <tr>
+              <td>Projects Completed</td>
+              <td>{{ assessment.projects_completed }}</td>
+            </tr>
+            <tr>
+              <td>Years in Business</td>
+              <td>{{ assessment.builder_years_in_business }} yrs</td>
+            </tr>
+            <tr>
+              <td>Publicly Listed</td>
+              <td>
+                {% if assessment.is_publicly_listed %}
+                  <span class="badge text-bg-success">Yes</span>
+                {% else %}
+                  <span class="badge text-bg-secondary">No</span>
+                {% endif %}
+              </td>
+            </tr>
           </table>
         </div>
         <div class="col-md-6">
-          <h6 class="small fw-bold text-muted text-uppercase mb-2">Market Dynamics</h6>
+          <h6 class="small fw-bold text-muted text-uppercase mb-2">
+            Market Dynamics
+          </h6>
           <table class="table table-sm feature-table mb-3">
-            <tr><td>Price CAGR (3yr)</td><td>{{ assessment.price_cagr_3yr }}%</td></tr>
-            <tr><td>Rental Yield</td><td>{{ assessment.expected_rental_yield }}%</td></tr>
-            <tr><td>Monthly Absorption</td><td>{{ assessment.monthly_absorption_pct }}%</td></tr>
-            <tr><td>Inventory (months)</td><td>{{ assessment.inventory_months }} mo</td></tr>
-            <tr><td>New Supply Units</td><td>{{ assessment.new_supply_units }}</td></tr>
+            <tr>
+              <td>Price CAGR (3yr)</td>
+              <td>{{ assessment.price_cagr_3yr }}%</td>
+            </tr>
+            <tr>
+              <td>Rental Yield</td>
+              <td>{{ assessment.expected_rental_yield }}%</td>
+            </tr>
+            <tr>
+              <td>Monthly Absorption</td>
+              <td>{{ assessment.monthly_absorption_pct }}%</td>
+            </tr>
+            <tr>
+              <td>Inventory (months)</td>
+              <td>{{ assessment.inventory_months }} mo</td>
+            </tr>
+            <tr>
+              <td>New Supply Units</td>
+              <td>{{ assessment.new_supply_units }}</td>
+            </tr>
           </table>
 
           <h6 class="small fw-bold text-muted text-uppercase mb-2">Location</h6>
           <table class="table table-sm feature-table mb-3">
-            <tr><td>Distance to CBD</td><td>{{ assessment.distance_to_cbd_km }} km</td></tr>
-            <tr><td>Distance to Metro</td><td>{{ assessment.distance_to_metro_km }} km</td></tr>
+            <tr>
+              <td>Distance to CBD</td>
+              <td>{{ assessment.distance_to_cbd_km }} km</td>
+            </tr>
+            <tr>
+              <td>Distance to Metro</td>
+              <td>{{ assessment.distance_to_metro_km }} km</td>
+            </tr>
           </table>
         </div>
       </div>
     </div>
-
-  </div><!-- /col-lg-8 -->
-</div><!-- /row -->
+  </div>
+  <!-- /col-lg-8 -->
+</div>
+<!-- /row -->
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Animate gauge on load
-document.addEventListener('DOMContentLoaded', () => {
-  const score    = {{ assessment.predicted_score|floatformat:2 }};
-  const pct      = score / 100;
-  const maxDash  = 283;                // half-circle perimeter ≈ π × r (90)
-  const filled   = pct * maxDash;
-  const fill     = document.getElementById('gaugeFill');
-  if (fill) {
-    // Start at 0, animate to filled
-    let current = 0;
-    const target = filled;
-    const step = target / 40;
-    const timer = setInterval(() => {
-      current = Math.min(current + step, target);
-      fill.setAttribute('stroke-dasharray', `${current.toFixed(1)} ${maxDash}`);
-      if (current >= target) clearInterval(timer);
-    }, 20);
+  // Animate gauge on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const score    = {{ assessment.predicted_score|floatformat:2 }};
+    const pct      = score / 100;
+    const maxDash  = 283;                // half-circle perimeter ≈ π × r (90)
+    const filled   = pct * maxDash;
+    const fill     = document.getElementById('gaugeFill');
+    if (fill) {
+      // Start at 0, animate to filled
+      let current = 0;
+      const target = filled;
+      const step = target / 40;
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        fill.setAttribute('stroke-dasharray', `${current.toFixed(1)} ${maxDash}`);
+        if (current >= target) clearInterval(timer);
+      }, 20);
+    }
+  });
+
+  // AI Explain
+  function loadAI() {
+    const btn     = document.getElementById('aiBtn');
+    const request = document.getElementById('ai-request');
+    const content = document.getElementById('ai-content');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analysing…';
+    request.textContent = 'Loading request payload...';
+    content.innerHTML = '<div class="text-muted small fst-italic">Claude is reading the underwriting data…</div>';
+
+    fetch("{% url 'ai_explain' assessment.pk %}")
+      .then(r => r.json())
+      .then(data => {
+        if (data.request_body) {
+          request.textContent = JSON.stringify(data.request_body, null, 2);
+        }
+
+        // Simple markdown → HTML (bold, headings, bullets)
+        let html = data.explanation
+          .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+          .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/^- (.+)$/gm, '<li>$1</li>')
+          .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+          .replace(/_(.+?)_/g, '<em>$1</em>')
+          .replace(/\n\n/g, '<br><br>')
+          .replace(/\n/g, '<br>');
+        content.innerHTML = html;
+        btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Refresh Analysis';
+        btn.disabled  = false;
+      })
+      .catch(err => {
+        request.textContent = 'Failed to load request payload.';
+        content.innerHTML = '<span class="text-danger">Failed to load AI explanation. Check your ANTHROPIC_API_KEY.</span>';
+        btn.innerHTML = '<i class="bi bi-magic me-1"></i> Retry';
+        btn.disabled  = false;
+      });
   }
-});
-
-// AI Explain
-function loadAI() {
-  const btn     = document.getElementById('aiBtn');
-  const content = document.getElementById('ai-content');
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Analysing…';
-  content.innerHTML = '<div class="text-muted small fst-italic">Claude is reading the underwriting data…</div>';
-
-  fetch("{% url 'ai_explain' assessment.pk %}")
-    .then(r => r.json())
-    .then(data => {
-      // Simple markdown → HTML (bold, headings, bullets)
-      let html = data.explanation
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-        .replace(/_(.+?)_/g, '<em>$1</em>')
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\n/g, '<br>');
-      content.innerHTML = html;
-      btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i> Refresh Analysis';
-      btn.disabled  = false;
-    })
-    .catch(err => {
-      content.innerHTML = '<span class="text-danger">Failed to load AI explanation. Check your ANTHROPIC_API_KEY.</span>';
-      btn.innerHTML = '<i class="bi bi-magic me-1"></i> Retry';
-      btn.disabled  = false;
-    });
-}
 </script>
 {% endblock %}
