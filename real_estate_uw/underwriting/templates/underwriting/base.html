@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}RE Underwriting{% endblock %} — CodeFrontier</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-w: 240px;
+      --brand:     #1a3c5e;
+      --brand-lt:  #e8f0f7;
+      --accent:    #f4a623;
+    }
+
+    body { background: #f5f7fa; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: fixed; top: 0; left: 0; height: 100vh;
+      width: var(--sidebar-w); background: var(--brand);
+      display: flex; flex-direction: column; z-index: 1000;
+      box-shadow: 2px 0 12px rgba(0,0,0,.15);
+    }
+    #sidebar .brand {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    #sidebar .brand h5 { color: #fff; font-weight: 700; margin: 0; font-size: 1rem; letter-spacing:.3px; }
+    #sidebar .brand small { color: rgba(255,255,255,.55); font-size: .72rem; }
+
+    #sidebar nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+    #sidebar nav .nav-label {
+      color: rgba(255,255,255,.4); font-size: .68rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 14px 12px 4px;
+    }
+    #sidebar nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; border-radius: 8px; color: rgba(255,255,255,.78);
+      text-decoration: none; font-size: .88rem; font-weight: 500;
+      transition: background .15s, color .15s;
+    }
+    #sidebar nav a:hover, #sidebar nav a.active {
+      background: rgba(255,255,255,.13); color: #fff;
+    }
+    #sidebar nav a i { font-size: 1rem; width: 20px; text-align: center; }
+    #sidebar .sidebar-footer {
+      padding: 14px 22px; border-top: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.35); font-size: .7rem;
+    }
+
+    /* ── Main ── */
+    #main { margin-left: var(--sidebar-w); min-height: 100vh; }
+    #topbar {
+      background: #fff; padding: 14px 28px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    #topbar .page-title { font-size: 1.1rem; font-weight: 600; color: #1e293b; margin: 0; }
+    #content { padding: 28px; }
+
+    /* ── Cards ── */
+    .stat-card {
+      background: #fff; border-radius: 12px; padding: 22px 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07); border: 1px solid #edf2f7;
+    }
+    .stat-card .stat-icon {
+      width: 46px; height: 46px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 12px;
+    }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: #1e293b; line-height: 1; }
+    .stat-card .stat-label { font-size: .82rem; color: #64748b; margin-top: 4px; }
+
+    /* ── Score gauge ── */
+    .gauge-wrap { position: relative; width: 220px; height: 120px; margin: 0 auto; }
+    .gauge-bg, .gauge-fill {
+      fill: none; stroke-width: 18; stroke-linecap: round;
+    }
+    .gauge-bg { stroke: #e2e8f0; }
+    .gauge-text { text-anchor: middle; font-weight: 700; }
+
+    /* ── Risk badge ── */
+    .risk-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 50px; font-size: .8rem; font-weight: 600;
+    }
+
+    /* ── AI panel ── */
+    #ai-panel {
+      background: linear-gradient(135deg, #f0f7ff 0%, #fafcff 100%);
+      border: 1px solid #c7dff7; border-radius: 14px; padding: 24px;
+    }
+    #ai-panel .ai-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    #ai-panel .ai-icon {
+      width: 36px; height: 36px; background: var(--brand);
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; color: #fff; font-size: 1.1rem;
+    }
+    #ai-content { white-space: pre-wrap; line-height: 1.7; font-size: .9rem; color: #1e293b; }
+    #ai-content h2, #ai-content h3 { font-size: 1rem; font-weight: 700; margin-top: 14px; color: var(--brand); }
+
+    /* ── Table ── */
+    .table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .5px; color: #64748b; }
+
+    /* ── Form sections ── */
+    .form-section {
+      background: #fff; border-radius: 12px; padding: 24px 26px;
+      border: 1px solid #edf2f7; margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .form-section h6 {
+      font-weight: 700; color: var(--brand); font-size: .82rem;
+      text-transform: uppercase; letter-spacing: .8px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--brand-lt); margin-bottom: 18px;
+    }
+    .form-label { font-size: .83rem; font-weight: 600; color: #374151; }
+    .form-text  { font-size: .75rem; }
+
+    /* ── Misc ── */
+    .feature-table td { font-size: .85rem; }
+    .feature-table td:first-child { color: #64748b; font-weight: 500; }
+    .feature-table td:last-child { font-weight: 600; }
+
+    @media (max-width: 768px) {
+      #sidebar { width: 60px; }
+      #sidebar .brand h5, #sidebar .brand small,
+      #sidebar nav a span, #sidebar .sidebar-footer,
+      #sidebar nav .nav-label { display: none; }
+      #main { margin-left: 60px; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ══ Sidebar ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+  <div class="brand">
+    <h5><i class="bi bi-building me-2" style="color:var(--accent)"></i>RE Underwriting</h5>
+    <small>CodeFrontier Software</small>
+  </div>
+
+  <nav>
+    <div class="nav-label">Main</div>
+    <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+    </a>
+    <a href="{% url 'property_list' %}" class="{% if 'property' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-buildings"></i><span>All Assessments</span>
+    </a>
+    <a href="{% url 'property_create' %}">
+      <i class="bi bi-plus-circle"></i><span>New Assessment</span>
+    </a>
+
+    <div class="nav-label">System</div>
+    <a href="/admin/">
+      <i class="bi bi-gear"></i><span>Admin Panel</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <i class="bi bi-cpu me-1"></i> LightGBM · SVC · Claude AI
+  </div>
+</div>
+
+<!-- ══ Main ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+  <div id="topbar">
+    <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+    <a href="{% url 'property_create' %}" class="btn btn-sm btn-primary" style="background:var(--brand);border-color:var(--brand);">
+      <i class="bi bi-plus-lg me-1"></i> New Assessment
+    </a>
+  </div>
+
+  <div id="content">
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+          {{ msg }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

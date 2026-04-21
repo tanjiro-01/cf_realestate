@@ -1,0 +1,31 @@
+{% extends 'underwriting/base.html' %}
+{% block title %}Delete Assessment{% endblock %}
+{% block page_title %}Delete Assessment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="stat-card text-center py-5">
+      <div style="font-size:3.5rem;color:#dc3545;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <h4 class="mt-3 fw-bold">Are you sure?</h4>
+      <p class="text-muted">
+        You are about to permanently delete the assessment for<br>
+        <strong>{{ assessment.project_name }}</strong>
+        {% if assessment.location %}({{ assessment.location }}){% endif %}.
+      </p>
+      <p class="text-muted small">This action cannot be undone.</p>
+      <div class="d-flex gap-3 justify-content-center mt-4">
+        <a href="{% url 'property_detail' assessment.pk %}" class="btn btn-outline-secondary px-4">
+          <i class="bi bi-arrow-left me-1"></i> Cancel
+        </a>
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger px-4">
+            <i class="bi bi-trash me-1"></i> Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

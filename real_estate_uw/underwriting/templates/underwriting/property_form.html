@@ -1,0 +1,217 @@
+{% extends 'underwriting/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <div class="row g-4">
+    <!-- ── LEFT: Form Sections ───────────────────────────────────────────── -->
+    <div class="col-lg-8">
+
+      <!-- Section 1: Project Identity -->
+      <div class="form-section">
+        <h6><i class="bi bi-building me-2"></i>Project Identity</h6>
+        <div class="row g-3">
+          <div class="col-sm-7">
+            <label class="form-label">{{ form.project_name.label }} <span class="text-danger">*</span></label>
+            {{ form.project_name }}
+            {% if form.project_name.errors %}<div class="invalid-feedback d-block">{{ form.project_name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="col-sm-5">
+            <label class="form-label">{{ form.location.label }}</label>
+            {{ form.location }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Domain Scores -->
+      <div class="form-section">
+        <h6><i class="bi bi-bar-chart-line me-2"></i>Domain Scores <small class="text-muted fw-normal">(0 – 100)</small></h6>
+        <div class="row g-3">
+          {% for f in form.market_score form.property_score form.builder_score form.financial_score %}
+          <div class="col-sm-6">
+            <label class="form-label">{{ f.label }} <span class="text-danger">*</span></label>
+            {{ f }}
+            {% if f.errors %}<div class="invalid-feedback d-block">{{ f.errors.0 }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="alert alert-light border mt-3 mb-0 py-2 px-3 small text-muted">
+          <i class="bi bi-info-circle me-1"></i>
+          These four composite scores are computed by the domain team and fed directly into the model as the highest-weighted features.
+        </div>
+      </div>
+
+      <!-- Section 3: Builder Profile -->
+      <div class="form-section">
+        <h6><i class="bi bi-person-badge me-2"></i>Builder Profile</h6>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label">{{ form.net_worth_crores.label }} <span class="text-danger">*</span></label>
+            {{ form.net_worth_crores }}
+          </div>
+          <div class="col-sm-3">
+            <label class="form-label">{{ form.projects_completed.label }} <span class="text-danger">*</span></label>
+            {{ form.projects_completed }}
+          </div>
+          <div class="col-sm-3">
+            <label class="form-label">{{ form.builder_years_in_business.label }} <span class="text-danger">*</span></label>
+            {{ form.builder_years_in_business }}
+          </div>
+          <div class="col-sm-6">
+            <div class="form-check mt-2 pt-1">
+              {{ form.is_publicly_listed }}
+              <label class="form-check-label">{{ form.is_publicly_listed.label }}</label>
+              <div class="form-text">Publicly listed builders have higher transparency requirements.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Risk Indicators -->
+      <div class="form-section">
+        <h6><i class="bi bi-shield-exclamation me-2"></i>Risk Indicators</h6>
+        <div class="row g-3">
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.litigation_count.label }} <span class="text-danger">*</span></label>
+            {{ form.litigation_count }}
+            <div class="form-text">Active court cases / disputes.</div>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.rera_violations.label }} <span class="text-danger">*</span></label>
+            {{ form.rera_violations }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.avg_delay_months.label }} <span class="text-danger">*</span></label>
+            {{ form.avg_delay_months }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.debt_to_equity_ratio.label }} <span class="text-danger">*</span></label>
+            {{ form.debt_to_equity_ratio }}
+            <div class="form-text">e.g. 1.5 means 1.5x debt to equity.</div>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.loan_to_value_pct.label }} <span class="text-danger">*</span></label>
+            {{ form.loan_to_value_pct }}
+            {% if form.loan_to_value_pct.errors %}<div class="invalid-feedback d-block">{{ form.loan_to_value_pct.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Market Dynamics -->
+      <div class="form-section">
+        <h6><i class="bi bi-graph-up me-2"></i>Market Dynamics</h6>
+        <div class="row g-3">
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.price_cagr_3yr.label }} <span class="text-danger">*</span></label>
+            {{ form.price_cagr_3yr }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.expected_rental_yield.label }} <span class="text-danger">*</span></label>
+            {{ form.expected_rental_yield }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.monthly_absorption_pct.label }} <span class="text-danger">*</span></label>
+            {{ form.monthly_absorption_pct }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.inventory_months.label }} <span class="text-danger">*</span></label>
+            {{ form.inventory_months }}
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label">{{ form.new_supply_units.label }} <span class="text-danger">*</span></label>
+            {{ form.new_supply_units }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Location -->
+      <div class="form-section">
+        <h6><i class="bi bi-geo-alt me-2"></i>Location Factors</h6>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label">{{ form.distance_to_cbd_km.label }} <span class="text-danger">*</span></label>
+            {{ form.distance_to_cbd_km }}
+            <div class="form-text">Distance to Central Business District.</div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">{{ form.distance_to_metro_km.label }} <span class="text-danger">*</span></label>
+            {{ form.distance_to_metro_km }}
+            <div class="form-text">Distance to nearest metro / rapid transit.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-lg-8 -->
+
+    <!-- ── RIGHT: Info Panel ─────────────────────────────────────────────── -->
+    <div class="col-lg-4">
+      <!-- Sticky sidebar card -->
+      <div style="position: sticky; top: 80px;">
+
+        <!-- Model Info -->
+        <div class="stat-card mb-3">
+          <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+            <i class="bi bi-cpu me-1"></i> Model Info
+          </h6>
+          <table class="table table-sm table-borderless feature-table mb-0">
+            <tr><td>Regressor</td><td>LightGBM</td></tr>
+            <tr><td>Classifier</td><td>SVC (RBF)</td></tr>
+            <tr><td>Features</td><td>21 selected</td></tr>
+            <tr><td>Output</td><td>Score 0–100</td></tr>
+          </table>
+        </div>
+
+        <!-- Score Ranges -->
+        <div class="stat-card mb-3">
+          <h6 class="fw-bold mb-3" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">
+            <i class="bi bi-diagram-3 me-1"></i> Score → Risk Map
+          </h6>
+          <div class="d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge text-bg-success">≥ 80</span>
+              <span class="small">Low Risk → <strong>INVEST</strong></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge text-bg-info">65 – 79</span>
+              <span class="small">Moderate Risk → <strong>INVEST</strong></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge text-bg-warning">50 – 64</span>
+              <span class="small">Medium Risk → <strong>HOLD</strong></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge text-bg-danger">35 – 49</span>
+              <span class="small">High Risk → <strong>AVOID</strong></span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge text-bg-dark">< 35</span>
+              <span class="small">Very High Risk → <strong>AVOID</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-lg fw-bold" style="background:#1a3c5e;color:#fff;border-color:#1a3c5e;">
+            <i class="bi bi-lightning-charge-fill me-2"></i>{{ btn }}
+          </button>
+          {% if assessment %}
+          <a href="{% url 'property_detail' assessment.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Details
+          </a>
+          {% else %}
+          <a href="{% url 'property_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Cancel
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div><!-- /col-lg-4 -->
+
+  </div><!-- /row -->
+</form>
+{% endblock %}

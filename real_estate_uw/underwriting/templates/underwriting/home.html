@@ -1,0 +1,174 @@
+{% extends 'underwriting/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ── Stat Cards ─────────────────────────────────────────────────────────── -->
+<div class="row g-4 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e8f0f7;color:#1a3c5e;"><i class="bi bi-buildings"></i></div>
+      <div class="stat-value">{{ total }}</div>
+      <div class="stat-label">Total Assessments</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#d1fae5;color:#059669;"><i class="bi bi-graph-up-arrow"></i></div>
+      <div class="stat-value text-success">{{ invest }}</div>
+      <div class="stat-label">INVEST Decisions</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-pause-circle"></i></div>
+      <div class="stat-value text-warning">{{ hold }}</div>
+      <div class="stat-label">HOLD Decisions</div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-x-circle"></i></div>
+      <div class="stat-value text-danger">{{ avoid }}</div>
+      <div class="stat-label">AVOID Decisions</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Chart Row ──────────────────────────────────────────────────────────── -->
+<div class="row g-4 mb-4">
+  <div class="col-lg-5">
+    <div class="stat-card h-100">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 class="mb-0 fw-700" style="color:#1a3c5e;">Risk Distribution</h6>
+        <span class="badge text-bg-light">All time</span>
+      </div>
+      <canvas id="riskChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="stat-card h-100 text-center d-flex flex-column align-items-center justify-content-center">
+      <div class="stat-label mb-1">Portfolio Avg Score</div>
+      <div class="stat-value" style="font-size:3.5rem;color:#1a3c5e;">{{ avg_score }}</div>
+      <div class="stat-label">/&nbsp;100</div>
+      <div class="mt-3">
+        {% if avg_score >= 80 %}
+          <span class="badge text-bg-success fs-6">Low Risk Portfolio</span>
+        {% elif avg_score >= 65 %}
+          <span class="badge text-bg-info fs-6">Moderate Risk</span>
+        {% elif avg_score >= 50 %}
+          <span class="badge text-bg-warning fs-6">Medium Risk</span>
+        {% else %}
+          <span class="badge text-bg-danger fs-6">High Risk Portfolio</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="stat-card h-100">
+      <h6 class="mb-3 fw-bold" style="color:#1a3c5e;font-size:.82rem;text-transform:uppercase;">Decision Mix</h6>
+      {% if total > 0 %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1"><small>INVEST</small><small class="fw-bold text-success">{{ invest }}</small></div>
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar bg-success" style="width:{% widthratio invest total 100 %}%"></div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1"><small>HOLD</small><small class="fw-bold text-warning">{{ hold }}</small></div>
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar bg-warning" style="width:{% widthratio hold total 100 %}%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="d-flex justify-content-between mb-1"><small>AVOID</small><small class="fw-bold text-danger">{{ avoid }}</small></div>
+          <div class="progress" style="height:8px;">
+            <div class="progress-bar bg-danger" style="width:{% widthratio avoid total 100 %}%"></div>
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted small">No assessments yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ── Recent Assessments ─────────────────────────────────────────────────── -->
+<div class="stat-card">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h6 class="mb-0 fw-bold" style="color:#1a3c5e;">Recent Assessments</h6>
+    <a href="{% url 'property_list' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+  </div>
+
+  {% if recent %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Project</th><th>Location</th><th>Score</th>
+          <th>Risk</th><th>Decision</th><th>Date</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in recent %}
+        <tr>
+          <td class="fw-semibold">{{ a.project_name }}</td>
+          <td class="text-muted">{{ a.location|default:"—" }}</td>
+          <td>
+            <span class="fw-bold" style="color:{{ a.score_color }};">
+              {{ a.predicted_score|floatformat:1 }}
+            </span>
+          </td>
+          <td>
+            <span class="badge text-bg-{{ a.risk_badge_class }}">{{ a.risk_category }}</span>
+          </td>
+          <td>
+            <span class="badge text-bg-{{ a.recommendation_badge_class }}">{{ a.recommendation }}</span>
+          </td>
+          <td class="text-muted small">{{ a.created_at|date:"d M Y" }}</td>
+          <td>
+            <a href="{% url 'property_detail' a.pk %}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-buildings" style="font-size:3rem;color:#cbd5e1;"></i>
+    <p class="text-muted mt-2">No assessments yet.</p>
+    <a href="{% url 'property_create' %}" class="btn btn-primary" style="background:#1a3c5e;border-color:#1a3c5e;">
+      <i class="bi bi-plus-lg me-1"></i> Create Your First Assessment
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const riskData = {{ risk_counts|safe }};
+const labels   = Object.keys(riskData);
+const values   = Object.values(riskData);
+const colors   = ['#198754','#0dcaf0','#ffc107','#dc3545','#343a40'];
+
+new Chart(document.getElementById('riskChart'), {
+  type: 'doughnut',
+  data: {
+    labels,
+    datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+  },
+  options: {
+    cutout: '68%',
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 12 } }
+    }
+  }
+});
+</script>
+{% endblock %}

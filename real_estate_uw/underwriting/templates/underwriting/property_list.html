@@ -1,0 +1,138 @@
+{% extends 'underwriting/base.html' %}
+{% block title %}All Assessments{% endblock %}
+{% block page_title %}All Assessments{% endblock %}
+
+{% block content %}
+
+<!-- ── Filters ─────────────────────────────────────────────────────────────── -->
+<div class="stat-card mb-4">
+  <form method="get" class="row g-3 align-items-end">
+    <div class="col-sm-5 col-lg-4">
+      <label class="form-label">Search</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Project name or location…">
+      </div>
+    </div>
+    <div class="col-sm-3 col-lg-3">
+      <label class="form-label">Risk Category</label>
+      <select name="risk" class="form-select">
+        <option value="">All Risks</option>
+        {% for val, label in risk_choices %}
+          <option value="{{ val }}" {% if risk_filter == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-3 col-lg-2">
+      <label class="form-label">Decision</label>
+      <select name="rec" class="form-select">
+        <option value="">All</option>
+        {% for val, label in rec_choices %}
+          <option value="{{ val }}" {% if rec_filter == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary" style="background:#1a3c5e;border-color:#1a3c5e;">Filter</button>
+      <a href="{% url 'property_list' %}" class="btn btn-outline-secondary ms-1">Reset</a>
+    </div>
+    <div class="col-auto ms-auto">
+      <a href="{% url 'property_create' %}" class="btn btn-success">
+        <i class="bi bi-plus-lg me-1"></i> New Assessment
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- ── Table ──────────────────────────────────────────────────────────────── -->
+<div class="stat-card">
+  <div class="d-flex align-items-center mb-3">
+    <h6 class="mb-0 fw-bold" style="color:#1a3c5e;">
+      {{ assessments.count }} Assessment{{ assessments.count|pluralize }}
+    </h6>
+  </div>
+
+  {% if assessments %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Project</th>
+          <th>Location</th>
+          <th>Score</th>
+          <th>Risk Category</th>
+          <th>Recommendation</th>
+          <th>Confidence</th>
+          <th>Date</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assessments %}
+        <tr>
+          <td class="text-muted small">{{ a.pk }}</td>
+          <td>
+            <a href="{% url 'property_detail' a.pk %}" class="fw-semibold text-decoration-none" style="color:#1a3c5e;">
+              {{ a.project_name }}
+            </a>
+          </td>
+          <td class="text-muted small">{{ a.location|default:"—" }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:42px;height:42px;">
+                <svg viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="21" cy="21" r="15" fill="none" stroke="#edf2f7" stroke-width="5"/>
+                  <circle cx="21" cy="21" r="15" fill="none" stroke="{{ a.score_color }}" stroke-width="5"
+                    stroke-dasharray="{% widthratio a.predicted_score 100 94 %} 94"
+                    stroke-dashoffset="23" stroke-linecap="round"/>
+                  <text x="21" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="{{ a.score_color }}">
+                    {{ a.predicted_score|floatformat:0 }}
+                  </text>
+                </svg>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge text-bg-{{ a.risk_badge_class }} rounded-pill px-3">
+              {{ a.risk_category }}
+            </span>
+          </td>
+          <td>
+            <span class="fw-bold text-{{ a.recommendation_badge_class }}">
+              {% if a.recommendation == 'INVEST' %}<i class="bi bi-check-circle-fill"></i>
+              {% elif a.recommendation == 'HOLD' %}<i class="bi bi-pause-circle-fill"></i>
+              {% else %}<i class="bi bi-x-circle-fill"></i>{% endif %}
+              {{ a.recommendation }}
+            </span>
+          </td>
+          <td>
+            <small class="text-muted">{{ a.confidence_level }}</small>
+          </td>
+          <td class="text-muted small">{{ a.created_at|date:"d M Y" }}</td>
+          <td class="text-end">
+            <a href="{% url 'property_detail' a.pk %}" class="btn btn-sm btn-outline-primary" title="View">
+              <i class="bi bi-eye"></i>
+            </a>
+            <a href="{% url 'property_update' a.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'property_delete' a.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-funnel" style="font-size:2.5rem;color:#cbd5e1;"></i>
+    <p class="text-muted mt-2">No assessments match your filters.</p>
+    <a href="{% url 'property_list' %}" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
